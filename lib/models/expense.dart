@@ -1,10 +1,24 @@
 // which data structure expenses should have
+// install package with command `flutter pub add intl` 
 
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; 
 import 'package:uuid/uuid.dart';
+
+final formatter = DateFormat.yMd();
 
 const uuid = Uuid();
 
 enum Category { food, travel, leisure, work, home, others }
+
+const categoryIcons = {
+  Category.food: Icons.lunch_dining,
+  Category.travel: Icons.train,
+  Category.leisure: Icons.movie,
+  Category.work: Icons.work,
+  Category.home: Icons.home,
+  Category.others: Icons.miscellaneous_services,
+};
 
 class Expense {
   Expense(
@@ -19,4 +33,8 @@ class Expense {
   final double amount;
   final DateTime date;
   final Category category;
+
+  String get formattedDate {
+    return formatter.format(date);
+  }
 }
