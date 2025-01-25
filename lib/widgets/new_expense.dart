@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:expense_app/models/expense.dart';
 
 class NewExpense extends StatefulWidget {
   const NewExpense({super.key});
@@ -14,15 +15,22 @@ class NewExpense extends StatefulWidget {
 class _NewExpensesState extends State<NewExpense> {
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
+  DateTime? _selectedDate;
+  Category _selectedCategory = Category.food;
 
-  void _presentDatePicker() {
+  void _presentDatePicker() async {
     final now = DateTime.now();
     final firstDate = DateTime(now.year - 10, now.month, now.day);
-    showDatePicker(
-        context: context,
-        initialDate: now,
-        firstDate: firstDate,
-        lastDate: now);
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: firstDate,
+      lastDate: now,
+    );
+
+    setState(() {
+      _selectedDate = pickedDate;
+    });
   }
 
   @override
@@ -63,7 +71,9 @@ class _NewExpensesState extends State<NewExpense> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(DateFormat.yMMMd().format(DateTime.now())),
+                    Text(_selectedDate == null
+                        ? formatter.format(DateTime.now())
+                        : formatter.format(_selectedDate!)),
                     IconButton(
                         onPressed: _presentDatePicker,
                         icon: const Icon(Icons.calendar_month))
@@ -72,19 +82,44 @@ class _NewExpensesState extends State<NewExpense> {
               )
             ],
           ),
+          SizedBox(
+            height: 16,
+          ),
           Row(
             children: [
+              DropdownButton(
+                  value: _selectedCategory,
+                  items: Category.values
+                      .map(
+                        (category) => DropdownMenuItem(
+                          value: category,
+                          child: Text(category.name.toUpperCase()),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    if (value == null) {
+                      return;
+                    }
+                    setState(() {
+                      _selectedCategory = value;
+                    });
+                  }),
+              Spacer(),
               ElevatedButton(
                 onPressed: () {
                   // use buildin class 'Navigator'to remove overlay on the screen
-                  Navigator.pop(context);
                 },
                 child: Text('Save Expense'),
               ),
               SizedBox(
                 width: 20,
               ),
-              TextButton(onPressed: () {}, child: Text('Cancel'))
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Cancel'))
             ],
           )
         ],
