@@ -15,6 +15,16 @@ class _NewExpensesState extends State<NewExpense> {
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
 
+  void _presentDatePicker() {
+    final now = DateTime.now();
+    final firstDate = DateTime(now.year - 10, now.month, now.day);
+    showDatePicker(
+        context: context,
+        initialDate: now,
+        firstDate: firstDate,
+        lastDate: now);
+  }
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -33,20 +43,41 @@ class _NewExpensesState extends State<NewExpense> {
             maxLength: 55,
             decoration: InputDecoration(label: Text('Title')),
           ),
-          TextField(
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            controller: _amountController,
-            maxLength: 20,
-            decoration:
-                InputDecoration(label: Text('Amount'), prefixText: '£ '),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  controller: _amountController,
+                  maxLength: 20,
+                  decoration:
+                      InputDecoration(label: Text('Amount'), prefixText: '£ '),
+                ),
+              ),
+              const SizedBox(
+                width: 16,
+              ),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(DateFormat.yMMMd().format(DateTime.now())),
+                    IconButton(
+                        onPressed: _presentDatePicker,
+                        icon: const Icon(Icons.calendar_month))
+                  ],
+                ),
+              )
+            ],
           ),
           Row(
             children: [
               ElevatedButton(
                 onPressed: () {
-                  print(_titleController.text);
-                  print(_amountController.text);
+                  // use buildin class 'Navigator'to remove overlay on the screen
+                  Navigator.pop(context);
                 },
                 child: Text('Save Expense'),
               ),
