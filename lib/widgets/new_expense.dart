@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:expense_app/models/expense.dart';
 
 class NewExpense extends StatefulWidget {
-  const NewExpense({super.key});
+  const NewExpense({super.key, required this.onAddExpense});
+
+  final void Function(Expense expense) onAddExpense;
 
   @override
   State<StatefulWidget> createState() {
@@ -37,11 +38,37 @@ class _NewExpensesState extends State<NewExpense> {
   void _submitExpensesData() {
     final enteredAmount = double.tryParse(_amountController.text);
     final amountIsInvalid = enteredAmount == null;
-    if (_titleController.text.trim().isEmpty ||
-        amountIsInvalid ||
-        _selectedDate == null) {
-      //TODO show error message
+
+    _selectedDate ??= DateTime.now(); // check null value
+
+    if (_titleController.text.trim().isEmpty || amountIsInvalid) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('Invalid input'),
+          content: Text(
+              'Please make sure a valid title, date and category were entered.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+              },
+              child: Text('Okay'),
+            )
+          ],
+        ),
+      );
+      return;
     }
+
+    widget.onAddExpense(
+      Expense(
+          title: _titleController.text,
+          amount: enteredAmount,
+          date: _selectedDate!,
+          category: _selectedCategory),
+    ); //you can get access to it
+    Navigator.pop(context);
   }
 
   @override
