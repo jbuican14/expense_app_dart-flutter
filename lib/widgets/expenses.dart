@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:expense_app/models/expense.dart';
 import 'package:expense_app/widgets/expense_list/expenses_list.dart';
 import 'package:expense_app/widgets/new_expense.dart';
+import 'package:flutter/material.dart';
 
 class Expenses extends StatefulWidget {
   const Expenses({super.key});
@@ -27,10 +27,22 @@ class _ExpensesState extends State<Expenses> {
         category: Category.leisure),
   ];
 
-   void _openAddExpenseOverlay() {
-    showModalBottomSheet(context: context, builder: (ctx) => NewExpense());
+  void _openAddExpenseOverlay() {
+    showModalBottomSheet(
+        context: context,
+        builder: (ctx) => NewExpense(
+              onAddExpense: _addExpense,
+            ));
   }
-  
+
+  // should be used to whatever part of the app wants to add expense to it
+  void _addExpense(Expense expense) {
+    setState(() {
+      // call on method add() provided by dart
+      _registeredExpenses.add(expense);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
