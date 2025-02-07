@@ -2,6 +2,7 @@ import 'package:expense_app/models/expense.dart';
 import 'package:expense_app/widgets/expense_list/expenses_list.dart';
 import 'package:expense_app/widgets/new_expense.dart';
 import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
 
 class Expenses extends StatefulWidget {
   const Expenses({super.key});
@@ -43,16 +44,49 @@ class _ExpensesState extends State<Expenses> {
       _registeredExpenses.add(expense);
     });
   }
-    
-  // remove expenses 
+
+  // remove expenses
   void _removeExpense(Expense expense) {
+    final expenseIndex = _registeredExpenses.indexOf(expense);
     setState(() {
       _registeredExpenses.remove(expense);
     });
+    // clear previous snackbar before showing the next one
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      duration: Duration(seconds: 5),
+      content: Text('Expense deleted.'),
+      action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            setState(() {
+              _registeredExpenses.insert(expenseIndex, expense);
+            });
+          }),
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
+    Widget mainContent = Center(
+      child: Text(
+        'Welcome to your new expense tracker! \nLet\'s get started by adding your first expense.',
+        style: TextStyle(
+          fontSize: 18,
+          foreground: Paint()
+            ..shader = ui.Gradient.linear(
+                const Offset(0, 20), const Offset(250, 20), <Color>[
+              Colors.pinkAccent,
+              const Color.fromARGB(255, 19, 19, 2)
+            ]),
+        ),
+      ),
+    );
+
+    if (_registeredExpenses.isNotEmpty) {
+      mainContent = ExpensesList(
+          expenses: _registeredExpenses, onRemoveExpense: _removeExpense);
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text("Personal Expense Tracker"),
@@ -63,9 +97,7 @@ class _ExpensesState extends State<Expenses> {
       body: Column(
         children: [
           const Text('The chart'),
-          Expanded(
-            child: ExpensesList(expenses: _registeredExpenses, onRemoveExpense: _removeExpense),
-          )
+          Expanded(child: mainContent),
         ],
       ),
     );
