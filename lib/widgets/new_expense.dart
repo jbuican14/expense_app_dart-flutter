@@ -81,7 +81,7 @@ class _NewExpensesState extends State<NewExpense> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(16, 48, 16, 16),,
+      padding: EdgeInsets.fromLTRB(16, 48, 16, 16),
       child: Column(
         children: [
           TextField(
@@ -144,19 +144,20 @@ class _NewExpensesState extends State<NewExpense> {
                     });
                   }),
               Spacer(),
+              TextButton(
+                onPressed: () {
+                  // use buildin class 'Navigator'to remove overlay on the screen
+                  Navigator.pop(context);
+                },
+                child: Text('Cancel'),
+              ),
               ElevatedButton(
                 onPressed: _submitExpensesData,
                 child: Text('Save Expense'),
               ),
               SizedBox(
                 width: 20,
-              ),
-              TextButton(
-                  onPressed: () {
-                    // use buildin class 'Navigator'to remove overlay on the screen
-                    Navigator.pop(context);
-                  },
-                  child: Text('Cancel'))
+              )
             ],
           )
         ],
