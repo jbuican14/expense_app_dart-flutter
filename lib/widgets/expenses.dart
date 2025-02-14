@@ -69,6 +69,9 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
+    // find out how much space (width) we have
+    final width = MediaQuery.of(context).size.width;
+
     Widget mainContent = Center(
       child: Text(
         'Welcome to your new expense tracker! \nLet\'s get started by adding your first expense.',
@@ -95,12 +98,19 @@ class _ExpensesState extends State<Expenses> {
           IconButton(onPressed: _openAddExpenseOverlay, icon: Icon(Icons.add))
         ],
       ),
-      body: Column(
+      body: width < 600
+          ? Column(
         children: [
           Chart(expenses: _registeredExpenses),
           Expanded(child: mainContent),
         ],
-      ),
+            )
+          : Row(
+              children: [
+                Expanded(child: Chart(expenses: _registeredExpenses)),
+                Expanded(child: mainContent),
+              ],
+            ),
     );
   }
 }
